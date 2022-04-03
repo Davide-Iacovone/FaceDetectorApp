@@ -18,5 +18,4 @@ while(True):
         break
 
 video.release()
->>>>>>> dd5ccaadd74b7fae6233104a8deaf5e2c45ae9c8
 cv2.destroyAllWindows()
