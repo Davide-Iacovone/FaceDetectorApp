@@ -1,0 +1,26 @@
+import cv2
+window_name = 'Lex'
+haar_cascade_face = cv2.CascadeClassifier('Cascade.xml')
+vid = cv2.VideoCapture(0)
+
+def detect_faces(cascade, img,k, scaleFactor = 1.1):
+    cop = img.copy()
+    gray_image = cv2.cvtColor(cop, cv2.COLOR_BGR2GRAY)
+    faces_rect = cascade.detectMultiScale(gray_image, scaleFactor=scaleFactor, minNeighbors=5)
+    for (x, y, w, h) in faces_rect:
+        cv2.rectangle(cop, (x, y), (x+w, y+h), (0, 0, 255), 2)
+    if len(faces_rect)!=0:
+        cv2.imshow(window_name,cop)
+        cv2.waitKey(1)
+        k+=1
+    else:
+        cv2.imshow(window_name,img)
+        cv2.waitKey(1)
+        k+=1
+    return k
+
+k=0
+while k<150:
+    ret, frame = vid.read()
+    k = detect_faces(haar_cascade_face,frame,k,scaleFactor=1.1)
+

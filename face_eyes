@@ -1,0 +1,50 @@
+import cv2
+import keyboard
+window_name = 'Lex'
+haar_cascade_face = cv2.CascadeClassifier('Cascade.xml')
+haar_cascade_eyes=cv2.CascadeClassifier('haarcascade_eye.xml')
+vid = cv2.VideoCapture(0)
+
+
+#-----------
+def detect_eyes(cascade,img,img_cropped,yshift,xshift, scaleFactor = 1.1):
+    cop = img_cropped.copy()
+    copshow=img.copy()
+    gray_image = cv2.cvtColor(cop, cv2.COLOR_BGR2GRAY)
+    faces_rect = cascade.detectMultiScale(gray_image, scaleFactor=scaleFactor, minNeighbors=12)
+    if len(faces_rect)>=2:
+        for (x, y, w, h) in faces_rect:
+            left=faces_rect[0]
+            right = faces_rect[1]
+            y_new=min(left[0],right[0])+yshift
+            x_new=min(left[1],right[1])+xshift
+            h_new=abs(left[0]-right[0])
+            w_new=abs(left[1]-right[1])
+        cv2.rectangle(copshow, (y_new, x_new), (y_new+h_new+h, x_new+w_new+w), (30, 120, 255), 2)
+    if len(faces_rect)!=0:
+        cv2.imshow(window_name,copshow)
+        cv2.waitKey(1)
+        #print(f'faces rect: {faces_rect}')
+    else:
+        cv2.imshow(window_name,img)
+        cv2.waitKey(1)
+    return img_cropped
+#-----------
+
+def detect_faces(cascade, img, scaleFactor = 1.1):
+    cop = img.copy()
+    gray_image = cv2.cvtColor(cop, cv2.COLOR_BGR2GRAY)
+    faces_rect = cascade.detectMultiScale(gray_image, scaleFactor=scaleFactor, minNeighbors=12)
+    if len(faces_rect)!=0:
+        for (x, y, w, h) in faces_rect:
+            detect_eyes(haar_cascade_eyes,img, img[y:y+h,x:x+w],x,y,scaleFactor=1.1)
+            #cv2.imshow(window_name,img[y:y+h,x:x+w])
+            cv2.waitKey(1)
+    else:
+        cv2.imshow(window_name,img)
+        cv2.waitKey(1)
+    return img
+
+while not keyboard.is_pressed(" "):
+    ret, frame = vid.read()
+    k = detect_faces(haar_cascade_face,frame,scaleFactor=1.1)

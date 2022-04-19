@@ -1,0 +1,20 @@
+import cv2
+window_name = 'Lex'
+haar_cascade_face = cv2.CascadeClassifier('Cascade.xml')
+
+def detect_faces(cascade, img, scaleFactor = 1.1):
+    cop = img.copy()
+    gray_image = cv2.cvtColor(cop, cv2.COLOR_BGR2GRAY)
+    faces_rect = cascade.detectMultiScale(gray_image, scaleFactor=scaleFactor, minNeighbors=5)
+    for (x, y, w, h) in faces_rect:
+        cv2.rectangle(cop, (x, y), (x+w, y+h), (0, 0, 255), 2)
+    print("cords: ({};{})".format((x, y), (x+w, y+h)))
+    cv2.imshow(window_name,cop)
+    cv2.waitKey(0)
+    #return image_copy
+
+img2 = cv2.imread('Lex-Fridman.jpg')
+cv2.imshow(window_name,img2)
+cv2.waitKey(0)
+
+faces = detect_faces(haar_cascade_face, img2)
